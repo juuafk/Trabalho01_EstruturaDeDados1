@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include "fila.h"
 
-// ============================
+// =========================
 // DEFINIÇÃO DA STRUCT FILA
-// ============================
+// =========================
 struct fila {
     int capacidade;
     int inicio;
@@ -18,11 +18,12 @@ struct fila {
 // ==========================
 
 // CRIAR OU DESTRUIR FILAS
+// CRIAR_FILA
 Fila* criar_fila(int capacidade) {
     size_t tamanho_total = sizeof(Fila) + capacidade * sizeof(void*);
     Fila* f = (Fila*) malloc(tamanho_total);
 
-    if (f == NULL) return NULL; // ERRO!
+    if (f == NULL) return NULL;
 
     f->capacidade = capacidade;
     f->inicio = 0;
@@ -32,27 +33,32 @@ Fila* criar_fila(int capacidade) {
     return f;
 }
 
-// VERIFICAR SITUAÇÃO DA FILA
-int fila_vazia(Fila* f) {
-    return f->tamanho == 0;
-}
-
-int fila_cheia(Fila* f) {
-    return f->tamanho == f->capacidade;
-}
-
-int fila_get_tamanho(Fila* f) {
-    if (f) return f->tamanho;
-    return 0;
-}
-
-// ALTERAR FILAS EXISTENTES
+// DESTRUIR_FILA
 void destruir_fila(Fila* f) {
     if (f == NULL) return;
 
     free(f);
 }
 
+// VERIFICAR SITUAÇÃO DA FILA
+// FILA_VAZIA
+int fila_vazia(Fila* f) {
+    return f->tamanho == 0;
+}
+
+// FILA_CHEIA
+int fila_cheia(Fila* f) {
+    return f->tamanho == f->capacidade;
+}
+
+// FILA_GET_TAMANHO
+int fila_get_tamanho(Fila* f) {
+    if (f) return f->tamanho;
+    return 0;
+}
+
+// ALTERAR FILAS EXISTENTES
+// ENFILEIRAR
 void enfileirar(Fila* f, void* elemento) {
     if (fila_cheia(f)) {
         printf("AVISO: tentativa de enfileirar em uma fila cheia!\n");
@@ -63,6 +69,7 @@ void enfileirar(Fila* f, void* elemento) {
     f->tamanho++;
 }
 
+// DESENFILEIRAR
 void* desenfileirar(Fila* f) {
     if (fila_vazia(f)) {
         return NULL;
