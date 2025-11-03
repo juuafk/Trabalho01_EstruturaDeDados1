@@ -5,41 +5,42 @@
 PROJ_NAME = ted
 ALUNO = juliagruara
 LIBS =  
-OBJETOS = main.o pilha.o fila.o formas.o leitura.o svg.o processamento.o
+OBJETOS = main.o pilha.o fila.o formas.o cmd.o svg.o processamento.o campo.o
 
 # compilador
 CC = gcc
 
 # flags
 CFLAGS= -ggdb -O0 -std=c99 -fstack-protector-all -Werror=implicit-function-declaration
-LDFLAGS=-O0
+LDFLAGS=-O0 -fstack-protector-all
 
 # ---------------------
-#  INSTRUÇÃO PRINCIPAL - como fazer o programa FINAL
+#  INSTRUÇÃO PRINCIPAL
 # ---------------------
-$(PROJ_NAME): $(OBJETOS)
-	$(CC) -o $(PROJ_NAME) $(LDFLAGS) $(OBJETOS) $(LIBS)
+ted: $(OBJETOS)
+	$(CC) -o ted $(LDFLAGS) $(OBJETOS) $(LIBS)
 
 # ---------------------
-#  INSTRUÇÃO GENÉRICA - como fazer qualquer arquivo .o
+#  INSTRUÇÃO GENÉRICA
 # ---------------------
 %.o : %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-# dependências extras (para cada módulo)
-# orienta sobre a dependência de um arquivo .o em relação a um .h
-
+# ---------------------
+#  DEPENDÊNCIAS
+# ---------------------
 pilha.o: pilha.h
 fila.o: fila.h
 formas.o: formas.h
+campo.o: campo.h fila.h
 
-leitura.o: leitura.h formas.h
-svg.o: svg.h formas.h
-processamento.o: processamento.h pilha.h fila.h formas.h
-main.o: pilha.h fila.h formas.h leitura.h svg.h processamento.h
+cmd.o: cmd.h formas.h fila.h processamento.h pilha.h campo.h
+svg.o: svg.h formas.h fila.h
+processamento.o: processamento.h pilha.h fila.h formas.h campo.h
+main.o: pilha.h fila.h formas.h cmd.h svg.h processamento.h campo.h
 
 # --------------------
-#  LIMPEZA (opcional)
+#  LIMPEZA
 # --------------------
 clean:
-	rm -f $(OBJETOS) $(PROJ_NAME)
+	rm -f $(OBJETOS) ted
