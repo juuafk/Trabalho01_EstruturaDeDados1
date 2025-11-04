@@ -36,17 +36,23 @@ char* extrair_nome_base(char* path) {
 
 extern Disparador** inicializar_disparadores(int max);
 extern Carregador** inicializar_carregadores(int max);
+
 extern void destruir_disparadores(Disparador** d, int max);
 extern void destruir_carregadores(Carregador** c, int max);
+
 extern Fila* campo_get_formas_chao(Campo* c);
 extern Fila* campo_get_arena(Campo* c);
+
 extern void destruir_forma(Forma* f);
+
 extern int ler_arquivo_geo(const char* arquivo_geo, Fila* formas_chao);
 extern void ler_arquivo_qry(char* path_qry, char* path_svg_qry, Disparador** disparadores, 
-                            int num_max_disparadores, Carregador** carregadores, 
-                            int num_max_carregadores, Campo* campo_jogo, 
-                            Fila* formas_derrotadas, int* proxima_id_global, FILE* arquivo_log);
-extern void svg_desenhar(const char* path_svg, Fila* formas_chao, Fila* formas_arena);
+int num_max_disparadores, Carregador** carregadores, 
+int num_max_carregadores, Campo* campo_jogo, 
+
+Fila* formas_derrotadas, int* proxima_id_global, FILE* arquivo_log);
+
+extern void svg_desenhar(const char* path_svg, Fila* formas_chao, Fila* formas_arena, Campo* campo);
 
 int main(int argc, char *argv[]) {
     char* dir_entrada = NULL;
@@ -65,11 +71,21 @@ int main(int argc, char *argv[]) {
         printf("Uso: ./programa -f <arq.geo> -o <dir_saida> [-e <dir_entrada>] [-q <arq.qry>]\n");
         return 1;
     }
-
-    char path_geo[1024];
-    if (dir_entrada != NULL) sprintf(path_geo, "%s/%s", dir_entrada, arq_geo);
-    else strcpy(path_geo, arq_geo);
     
+    char path_geo[1024];
+    if (dir_entrada != NULL) 
+        sprintf(path_geo, "%s/%s", dir_entrada, arq_geo);
+    else 
+        strcpy(path_geo, arq_geo);
+
+    FILE* teste = fopen(path_geo, "r");
+    if (teste == NULL) {
+        printf("ERRO: Arquivo .geo nao encontrado: %s\n", path_geo);
+        return 1;
+    }
+    fclose(teste);
+    printf("Arquivo .geo encontrado: %s\n", path_geo);
+
     char* nome_base_geo = extrair_nome_base(arq_geo);
     char path_svg_geo[1024];
     sprintf(path_svg_geo, "%s/%s.svg", dir_saida, nome_base_geo);
@@ -112,7 +128,7 @@ int main(int argc, char *argv[]) {
     proxima_id_global = maior_id_lida + 1;
 
     printf("gerando SVG inicial: %s\n", path_svg_geo);
-    svg_desenhar(path_svg_geo, formas_chao, NULL);
+    svg_desenhar(path_svg_geo, formas_chao, NULL, NULL);
 
     if (arq_qry != NULL) {
         printf("processando arquivo QRY: %s\n", path_qry);
@@ -128,7 +144,7 @@ int main(int argc, char *argv[]) {
         
         printf("gerando SVG final: %s\n", path_svg_qry);
         Fila* arena = campo_get_arena(campo_jogo);
-        svg_desenhar(path_svg_qry, formas_chao, arena);
+        svg_desenhar(path_svg_qry, formas_chao, arena, campo_jogo);
         
         if (arquivo_log != NULL) {
             fclose(arquivo_log);

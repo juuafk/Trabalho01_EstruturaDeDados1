@@ -60,13 +60,11 @@ int id_d, int id_c_esq, int id_c_dir, FILE* log);
 void comando_shft(Disparador** disparadores, int num_max_disparadores, int id_d, char lado, int n, FILE* log);
 
 // DSP: dispara a forma na posição de disparo para a fila da arena.
-void comando_dsp(Disparador** disparadores, int num_d, int id_d, double dx, double dy, Campo* c, FILE* log);
+void comando_dsp(Disparador** disparadores, int num_d, int id_d, double dx, double dy, Campo* c, char visualizar, FILE* log);
 
 // RJD: dispara um carregador inteiro na arena.
 void comando_rjd(Disparador** disparadores, int num_max_disparadores, 
-int id_d, char lado, 
-double dx, double dy, double ix, double iy, 
-Campo* c, FILE* log); 
+int id_d, char lado, double dx, double dy, double ix, double iy, Campo* c, FILE* log); 
 
 // CALC: processa todas as colisões na arena, utilizando o ID global para novos clones.
 void comando_calc(Campo* c, Fila* formas_derrotadas, int* proxima_id_global, FILE* log);

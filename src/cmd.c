@@ -12,11 +12,12 @@
 int ler_arquivo_geo(const char* arquivo_geo, Fila* formas_chao) {
     FILE* arquivo = fopen(arquivo_geo, "r");
     if (arquivo == NULL) {
-        printf("ERRO: nao foi possivel abrir o arquivo .geo: %s\n :(", arquivo_geo);
+        printf("ERRO: nao foi possivel abrir o arquivo .geo: %s :(\n", arquivo_geo);
         return 0;
     }
 
     int maior_id_encontrada = 0;
+    int formas_lidas = 0; 
     char linha[1024];
     char comando[8];
 
@@ -45,14 +46,49 @@ int ler_arquivo_geo(const char* arquivo_geo, Fila* formas_chao) {
             sscanf(linha, "l %d %lf %lf %lf %lf %s", &id, &x1, &y1, &x2, &y2, cor);
             nova_forma = criar_linha(id, x1, y1, x2, y2, cor);
         }
+        else if (strcmp(comando, "t") == 0) {
+            double x, y;
+            char cor_borda[32], cor_preenchimento[32], ancora;
+            char texto[256];
+            char ancora_str_temp[10];
+            int offset = 0;
+
+            int lidos = sscanf(linha, "t %d %lf %lf %s %s %s %n", &id, &x, &y, cor_borda, cor_preenchimento, ancora_str_temp, &offset);
+            
+            if (lidos == 6 && offset > 0) {
+                ancora = ancora_str_temp[0];
+                char* texto_inicio = linha + offset;
+                
+                while (*texto_inicio == ' ' || *texto_inicio == '\t') {
+                    texto_inicio++;
+                }
+                
+                strncpy(texto, texto_inicio, sizeof(texto) - 1);
+                texto[sizeof(texto) - 1] = '\0';
+                
+                char* nl = strchr(texto, '\n');
+                if (nl) *nl = '\0';
+                char* cr = strchr(texto, '\r');
+                if (cr) *cr = '\0';
+                char ancora_final[2] = {ancora, '\0'};
+                
+                nova_forma = criar_texto(id, x, y, texto, ancora_final, cor_borda, cor_preenchimento);
+            }
+        }
+        
         if (nova_forma != NULL) {
             enfileirar(formas_chao, nova_forma);
+            formas_lidas++;  
             if (id > maior_id_encontrada) {
                 maior_id_encontrada = id;
             }
         }
     }
+    
     fclose(arquivo);
+    
+    printf("Arquivo .geo lido: %d formas carregadas no chao\n", formas_lidas);
+    
     return maior_id_encontrada;
 }
 
@@ -104,12 +140,19 @@ void ler_arquivo_qry(char* path_qry, char* path_svg_qry,
             sscanf(linha, "shft %d %c %d", &id_d, &lado, &n); 
             comando_shft(disparadores, num_max_disparadores, id_d, lado, n, arquivo_log);
         } 
-        else if (strcmp(comando, "dsp") == 0) {
-            int id_d;
-            double dx, dy;
-            sscanf(linha, "dsp %d %lf %lf", &id_d, &dx, &dy);
-            comando_dsp(disparadores, num_max_disparadores, id_d, dx, dy, campo_jogo, arquivo_log); 
-        } 
+else if (strcmp(comando, "dsp") == 0) {
+    int id_d;
+    double dx, dy;
+    char visualizar = '\0';
+    
+    int lidos = sscanf(linha, "dsp %d %lf %lf %c", &id_d, &dx, &dy, &visualizar);
+    
+    if (lidos < 3) {
+        sscanf(linha, "dsp %d %lf %lf", &id_d, &dx, &dy);
+    }
+    
+    comando_dsp(disparadores, num_max_disparadores, id_d, dx, dy, campo_jogo, visualizar, arquivo_log); 
+}
         else if (strcmp(comando, "rjd") == 0) {
             int id_d;
             char lado;

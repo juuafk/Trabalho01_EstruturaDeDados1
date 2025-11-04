@@ -458,7 +458,6 @@ void forma_trocar_cores(Forma* forma) {
     
 }
 
-
 // =======================================================
 // FUNÇÕES AUXILIARES ESTÁTICAS PARA DETECÇÃO DE COLISÃO
 // =======================================================

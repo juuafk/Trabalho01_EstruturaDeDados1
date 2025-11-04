@@ -4,7 +4,7 @@
 
 PROJ_NAME = ted
 ALUNO = juliagruara
-LIBS =  
+LIBS = -lm  
 OBJETOS = main.o pilha.o fila.o formas.o cmd.o svg.o processamento.o campo.o
 
 # compilador

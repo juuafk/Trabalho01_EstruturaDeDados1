@@ -3,7 +3,8 @@
 
 #include <stdio.h> 
 #include "fila.h" 
-#include "formas.h" 
+#include "formas.h"
+#include "campo.h"
 
 // SVG
 // ==========================================================
@@ -19,6 +20,6 @@
 
 // SVG_DESENHAR
 // desenha o estado atual do jogo em um arquivo SVG
-void svg_desenhar(const char* nome_arquivo_svg, Fila* formas_chao, Fila* arena);
+void svg_desenhar(const char* nome_arquivo_svg, Fila* formas_chao, Fila* formas_derrotadas, Campo* campo);
 
 #endif
