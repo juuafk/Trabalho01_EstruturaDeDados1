@@ -8,6 +8,10 @@
 #include "pilha.h"
 #include "fila.h"
 
+#define MAX_COR_LEN 8
+#define MAX_TEXTO_LEN 50
+#define MAX_ANCORA_LEN 10 
+
 // PONTUAÇÃO DO JOGO
 static double pontuacao_total_acumulada = 0.0;
 
@@ -392,7 +396,6 @@ double dx, double dy, double ix, double iy, Campo* c, FILE* log) {
     }
 }
 
-
 // COMANDO_CALC
 void comando_calc(Campo* c, Fila* formas_derrotadas, int* proxima_id_global, FILE* log) {
     Fila* arena = campo_get_arena(c);
@@ -409,7 +412,7 @@ void comando_calc(Campo* c, Fila* formas_derrotadas, int* proxima_id_global, FIL
         printf("Comando CALC: Nao tem formas suficientes para colidir\n");
         if (log) fprintf(log, "CALC: Nao tem formas suficientes para colidir\n");
         
-        if (log) fprintf(log, "CALC concluido! PONTUAÇÃO TOTAL: %.2f\n", pontuacao_total_acumulada);
+        if (log) fprintf(log, "CALC concluido! PONTUACAO TOTAL: %.2f\n", pontuacao_total_acumulada);
         return;
     }
 
@@ -430,6 +433,7 @@ void comando_calc(Campo* c, Fila* formas_derrotadas, int* proxima_id_global, FIL
     if (log) fprintf(log, "Iniciando CALC:\n");
 
     double area_destruida_neste_round = 0.0;
+    char cor_temp_buffer[MAX_COR_LEN]; 
 
     for (int i = 0; i < tamanho - 1; i += 2) {
         Forma* f_I = vetor_arena[i];
@@ -447,7 +451,7 @@ void comando_calc(Campo* c, Fila* formas_derrotadas, int* proxima_id_global, FIL
             if (log) fprintf(log, "Colisao: ID %d (Area %.2f) vs ID %d (Area %.2f)\n", 
                              forma_get_id(f_I), area_I, forma_get_id(f_J), area_J);
 
-            if (area_I < area_J) {
+            if (area_I < area_J) { 
                 if (log) fprintf(log, "Vencedor: %d Perdedor: %d (ESMAGADO)\n", 
                                  forma_get_id(f_J), forma_get_id(f_I));
 
@@ -467,10 +471,13 @@ void comando_calc(Campo* c, Fila* formas_derrotadas, int* proxima_id_global, FIL
                 enfileirar(formas_chao, f_J);
                 vetor_arena[i + 1] = NULL;
 
-            }
-            else if (area_I > area_J) {
-                if (log) fprintf(log, "Vencedor: %d Perdedor: %d (VOLTA AO CHAO)\n", 
+            } 
+            else if (area_I > area_J) { 
+                if (log) fprintf(log, "Vencedor: %d Perdedor: %d (VOLTA AO CHAO, COR ALTERADA)\n", 
                                  forma_get_id(f_I), forma_get_id(f_J));
+                
+                const char* cor_do_vencedor = get_cor_ganhadora(f_I, cor_temp_buffer);
+                forma_set_cor_borda(f_J, cor_do_vencedor);
                                  
                 forma_trocar_cores(f_I); 
                 enfileirar(formas_chao, f_I);
@@ -480,34 +487,19 @@ void comando_calc(Campo* c, Fila* formas_derrotadas, int* proxima_id_global, FIL
                 enfileirar(formas_chao, f_J);
                 vetor_arena[i + 1] = NULL;
             } 
-            else {
-                if (log) fprintf(log, "Empate: ambos esmagados (areas iguais)\n");
+            else { 
+                if (log) fprintf(log, "Empate: ambos voltam ao chao (areas iguais)\n");
                 
-                pontuacao_total_acumulada += area_I; 
-                pontuacao_total_acumulada += area_J; 
-                area_destruida_neste_round += area_I + area_J; 
-                
-                double x_esmag_I, y_esmag_I, x_esmag_J, y_esmag_J;
-                
-                forma_get_posicao(f_I, &x_esmag_I, &y_esmag_I);
-                campo_adicionar_esmagamento(c, x_esmag_I, y_esmag_I);
-
-                forma_get_posicao(f_J, &x_esmag_J, &y_esmag_J);
-                campo_adicionar_esmagamento(c, x_esmag_J, y_esmag_J);
-
-                forma_set_esmagada(f_I, 1);
-                enfileirar(formas_derrotadas, forma_clonar(f_I, forma_get_id(f_I)));
-                
-                forma_set_esmagada(f_J, 1);
-                enfileirar(formas_derrotadas, forma_clonar(f_J, forma_get_id(f_J)));
-                
-                destruir_forma(f_I);
-                destruir_forma(f_J);
+                forma_trocar_cores(f_I); 
+                enfileirar(formas_chao, f_I);
                 vetor_arena[i] = NULL;
+                
+                forma_trocar_cores(f_J);
+                enfileirar(formas_chao, f_J);
                 vetor_arena[i + 1] = NULL;
             }
         } 
-        else {
+        else { 
             if (log) fprintf(log, "Nao Sobrepoem: ID %d vs ID %d\n", forma_get_id(f_I), forma_get_id(f_J));
 
             forma_trocar_cores(f_I);
@@ -530,8 +522,8 @@ void comando_calc(Campo* c, Fila* formas_derrotadas, int* proxima_id_global, FIL
     free(vetor_arena);
     
     if (log) {
-        fprintf(log, "CALC: Area total destruida neste round: %.2f\n", area_destruida_neste_round);
-        fprintf(log, "CALC concluido! PONTUAÇÃO TOTAL: %.2f\n", pontuacao_total_acumulada);
+        fprintf(log, "CALC: Area total destruida na rodada: %.2f\n", area_destruida_neste_round);
+        fprintf(log, "CALC concluido! PONTUACAO TOTAL: %.2f\n", pontuacao_total_acumulada);
     }
 }
 

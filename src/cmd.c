@@ -140,19 +140,19 @@ void ler_arquivo_qry(char* path_qry, char* path_svg_qry,
             sscanf(linha, "shft %d %c %d", &id_d, &lado, &n); 
             comando_shft(disparadores, num_max_disparadores, id_d, lado, n, arquivo_log);
         } 
-else if (strcmp(comando, "dsp") == 0) {
-    int id_d;
-    double dx, dy;
-    char visualizar = '\0';
+        else if (strcmp(comando, "dsp") == 0) {
+            int id_d;
+            double dx, dy;
+            char visualizar = '\0';
     
-    int lidos = sscanf(linha, "dsp %d %lf %lf %c", &id_d, &dx, &dy, &visualizar);
+            int lidos = sscanf(linha, "dsp %d %lf %lf %c", &id_d, &dx, &dy, &visualizar);
     
-    if (lidos < 3) {
-        sscanf(linha, "dsp %d %lf %lf", &id_d, &dx, &dy);
-    }
+            if (lidos < 3) {
+                sscanf(linha, "dsp %d %lf %lf", &id_d, &dx, &dy);
+            }
     
-    comando_dsp(disparadores, num_max_disparadores, id_d, dx, dy, campo_jogo, visualizar, arquivo_log); 
-}
+        comando_dsp(disparadores, num_max_disparadores, id_d, dx, dy, campo_jogo, visualizar, arquivo_log); 
+        }
         else if (strcmp(comando, "rjd") == 0) {
             int id_d;
             char lado;

@@ -125,6 +125,9 @@ const char* forma_get_cor_borda(Forma* f);
 // retorna a cor de preenchimento de uma forma
 const char* forma_get_cor_preenchimento(Forma* f);
 
+// GET_COR_GANHADORA
+const char* get_cor_ganhadora(Forma* f_I, char* temp_complementar_buffer);
+
 // FORMA_GET_R
 // retorna o raio do circulo
 double forma_get_r(Forma* f);
@@ -181,6 +184,9 @@ void forma_get_texto_dados(Forma* f, double* x, double* y, char* ancora, const c
 // FORMA_GET_TEXTO_BBOX
 // consegue o retângulo correspondente ao texto   
 void forma_get_texto_bbox(Forma* f, double* x, double* y, double* largura, double* altura);
+
+// COR_COMPLEMENTAR
+void cor_complementar(const char* cor_hex, char* complementar_hex);
 
 // =============================
 // FUNÇÕES DE LÓGICA E CÁLCULO

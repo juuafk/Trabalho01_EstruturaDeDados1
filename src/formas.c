@@ -12,7 +12,6 @@
     #define M_PI 3.14159265358979323846
 #endif
 
-
 // FUNCAO AUXILIAR SUBSTITITUTA DE STRDUP
 static char* duplicar_string(const char* s) {
     if (s == NULL) {
@@ -206,6 +205,16 @@ const char* forma_get_cor_borda(Forma* f) { return f->cor_borda; }
 // FORMA_GET_COR_PREENCHIMENTO
 const char* forma_get_cor_preenchimento(Forma* f) { return f->cor_preenchimento; }
 
+// GET_COR_GANHADORA
+const char* get_cor_ganhadora(Forma* f_I, char* temp_complementar_buffer) {
+    if (forma_get_tipo(f_I) == 'l') {
+        cor_complementar(forma_get_cor_borda(f_I), temp_complementar_buffer);
+        return temp_complementar_buffer;
+    } else {
+        return forma_get_cor_preenchimento(f_I);
+    }
+}
+
 // FORMA_GET_R (para circulo)
 double forma_get_r(Forma* f) { 
     if (f == NULL || f->tipo != 'c') return 0;
@@ -315,6 +324,21 @@ void forma_get_texto_bbox(Forma* f, double* x, double* y, double* largura, doubl
     } else if (ancora == 'e' || ancora == 'f') {
         *x = *x - *largura;
     }
+}
+
+// COR_COMPLEMENTAR
+void cor_complementar(const char* cor_hex, char* complementar_hex) {
+    unsigned int r, g, b;
+    if (sscanf(cor_hex + 1, "%2x%2x%2x", &r, &g, &b) != 3) {
+        strcpy(complementar_hex, cor_hex);
+        return;
+    }
+    
+    r = 0xFF - r; 
+    g = 0xFF - g;
+    b = 0xFF - b;
+    
+    sprintf(complementar_hex, "#%02X%02X%02X", r, g, b);
 }
 
 // FUNÇÕES DE LÓGICA E CÁLCULO
